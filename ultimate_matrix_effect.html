@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Matrix Image - Rehan</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 95%;
+            margin: auto;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background-color: #111;
+            display: inline-block;
+        }
+
+        input[type="file"] {
+            color: white;
+            padding: 5px;
+        }
+
+        canvas {
+            /* Canvas ko screen par fit karne ke liye */
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            background-color: black;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #downloadBtn {
+            display: none;
+            background-color: #00ff00;
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+
+        #downloadBtn:hover {
+            background-color: white;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ultimate Matrix Effect</h1>
+        <div class="controls">
+            <input type="file" id="uploadInput" accept="image/*">
+            <div id="status">Apni photo select karein...</div>
+        </div>
+
+        <canvas id="matrixCanvas"></canvas>
+        
+        <a id="downloadBtn">Download Image</a>
+    </div>
+
+    <script>
+        const uploadInput = document.getElementById('uploadInput');
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusDiv = document.getElementById('status');
+
+        uploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            statusDiv.innerText = "Processing... Please wait. Badi images mein time lag sakta hai.";
+            downloadBtn.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    generateMatrixImage(img);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function generateMatrixImage(img) {
+            // 1. Canvas ka size set karein. High resolution ke liye original size rakhein.
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // 2. Ek temporary canvas banayein original image ke colors lene ke liye.
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(img, 0, 0);
+            
+            // Original image ka pura pixel data le lein.
+            const imgData = tempCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+            // 3. Main canvas ko pura BLACK kar dein.
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 4. Font settings. Jitna chhota font, utni detail.
+            const fontSize = 8; // Aap isse 6 ya 10 karke dekh sakte hain.
+            ctx.font = 'bold ' + fontSize + 'px monospace';
+            ctx.textBaseline = 'top';
+
+            // 5. Grid Loop: Puri image par loop chalayenge.
+            for (let y = 0; y < canvas.height; y += fontSize) {
+                for (let x = 0; x < canvas.width; x += fontSize) {
+                    
+                    // Is block ka average color nikaalte hain.
+                    let totalR = 0, totalG = 0, totalB = 0, count = 0;
+
+                    // Block ke andar ke pixels ko scan karein
+                    for (let by = 0; by < fontSize && y + by < canvas.height; by++) {
+                        for (let bx = 0; bx < fontSize && x + bx < canvas.width; bx++) {
+                            const index = ((y + by) * canvas.width + (x + bx)) * 4;
+                            totalR += imgData[index];
+                            totalG += imgData[index + 1];
+                            totalB += imgData[index + 2];
+                            count++;
+                        }
+                    }
+
+                    // Average color calculate karein
+                    const avgR = Math.floor(totalR / count);
+                    const avgG = Math.floor(totalG / count);
+                    const avgB = Math.floor(totalB / count);
+
+                    // 6. Text ka color set karein (Original image ke color se).
+                    ctx.fillStyle = `rgb(${avgR},${avgG},${avgB})`;
+
+                    // 7. Randomly '0' ya '1' chunein aur draw karein.
+                    const char = Math.random() > 0.5 ? '1' : '0';
+                    ctx.fillText(char, x, y);
+                }
+            }
+
+            statusDiv.innerText = "Done! Image taiyaar hai.";
+            // Download link set karein
+            downloadBtn.href = canvas.toDataURL('image/png');
+            downloadBtn.download = 'matrix-style-photo.png';
+            downloadBtn.style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
