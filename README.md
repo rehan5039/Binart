@@ -23,7 +23,7 @@ This project is built purely using **HTML, CSS, and JavaScript**. No server is u
     ```bash
     git clone [https://github.com/rehan5039/Binart.git](https://github.com/rehan5039/Binart.git)
     ```
-2.  **Open** the `index.html` file in any modern web browser (Chrome, Edge, Firefox, etc.).
+2.  **Open** the `ultimate_matrix_effect.html` file in any modern web browser (Chrome, Edge, Firefox, etc.).
 3.  Click on **"Choose File"** and select your photo.
 4.  Wait for the processing to finish (larger images may take a few seconds).
 5.  Click **"Download Image"** to save your new Matrix-style photo!
