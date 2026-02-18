@@ -19,6 +19,11 @@ This project is built purely using **HTML, CSS, and JavaScript**. No server is u
 
 ## 🛠️ How to Use
 
+https://rehan5039.github.io/Binart/matrix_maker.html
+
+
+https://rehan5039.github.io/Binart/ultimate_matrix_effect.html
+
 1.  **Clone the repository** or download the ZIP file:
     ```bash
     git clone https://github.com/rehan5039/Binart.git
